@@ -1,7 +1,9 @@
+import imp
 from bs4 import BeautifulSoup as Soup
 from bs4 import SoupStrainer as Strainer
 import requests as requests
 import json
+import os
 
 # This is a standard user-agent of Chrome browser running on Windows 10
 headers = {'User-Agent':
@@ -28,7 +30,6 @@ def create_search_url(search_string):
 
     return search_url
 
-
 def find_product_image(search_soup):
     """
     :param: search_soup: soup data of an amazon search page
@@ -38,7 +39,6 @@ def find_product_image(search_soup):
     photo_object = search_soup.find("img", attrs={"class": 's-image'})
     photo_path = photo_object["src"]
     return photo_path
-
 
 def find_product_page(search_soup):
     """
@@ -54,19 +54,35 @@ def find_product_page(search_soup):
     return link_to_product_url
 
 def retrieve_html(path):
+    """
+    :param: url
+    :return: request object content of site
+    """
     request_result = requests.get(path, headers=headers)
     return request_result.content
 
 def save_html(html, path):
+    """
+    :param: html: html data to be written
+    :param: path: path of where to write
+    :return: saves html as file
+    """
     with open(path, 'wb') as file:
         file.write(html)
 
 def read_html(path):
+    """file to read
+    :return: file contents
+    """
     with open(path, 'rb') as file:
         return file.read()
 
 def find_product_information(user_string):
-
+    """
+    :param: user_string: product name as string
+    scrapes the web page of the amazon web search of that product and writes a json file
+    containing to path to the product page and image of the first returned product
+    """
     # construct url of the amazon search
     search_url = create_search_url(user_string)
 
@@ -74,10 +90,11 @@ def find_product_information(user_string):
     local_search_html =retrieve_html(search_url)
 
     # save html file
-    save_html(local_search_html, 'search_result')
+    html_file_name = user_string + ".html"
+    save_html(local_search_html, html_file_name)
 
     # open html
-    search_html = read_html('search_result')
+    search_html = read_html(html_file_name)
 
     #strainers
     only_a = Strainer("a", attrs={"class":"a-link-normal s-no-outline"} )
@@ -88,10 +105,14 @@ def find_product_information(user_string):
     product_page_url = find_product_page(product_soup)
     product_image_url =  find_product_image(product_soup)
 
+    json_file_name = user_string + ".json"
+
     result_dict = {
         "product_url"   : product_page_url,
-        "product_image" : product_image_url
+        "product_image" : product_image_url,
     }
     
-    with open("product_information.json", "w") as outfile:
+    with open(json_file_name, "w") as outfile:
         json.dump(result_dict, outfile)
+    
+    os.remove(html_file_name)
