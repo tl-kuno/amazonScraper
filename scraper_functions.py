@@ -1,4 +1,3 @@
-import imp
 from bs4 import BeautifulSoup as Soup
 from bs4 import SoupStrainer as Strainer
 import requests as requests
@@ -45,11 +44,9 @@ def find_product_page(search_soup):
     :param: search_soup: soup data of an amazon search page
     :return: url of product page of first returned product
     """
-    # locate first extension for link to first product in search
     link_to_product = search_soup.find("a", attrs={"class": 'a-link-normal s-no-outline'})
     link_to_product_extension = link_to_product["href"]
 
-    # concatenate extension to base url
     link_to_product_url = 'http://www.amazon.com' + link_to_product_extension
     return link_to_product_url
 
@@ -83,23 +80,18 @@ def find_product_information(user_string):
     scrapes the web page of the amazon web search of that product and writes a json file
     containing to path to the product page and image of the first returned product
     """
-    # construct url of the amazon search
+
     search_url = create_search_url(user_string)
 
-    # retrieve html
     local_search_html =retrieve_html(search_url)
 
-    # save html file
     html_file_name = user_string + ".html"
     save_html(local_search_html, html_file_name)
 
-    # open html
     search_html = read_html(html_file_name)
 
-    #strainers
     only_a = Strainer("a", attrs={"class":"a-link-normal s-no-outline"} )
 
-    # parse file
     product_soup = Soup(search_html, features="html.parser", parse_only=only_a)
 
     product_page_url = find_product_page(product_soup)

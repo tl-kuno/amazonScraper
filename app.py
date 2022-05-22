@@ -1,7 +1,7 @@
 # Program Name: Amazon Product Information Scraper
 # Author: Taylor Kuno
 # Created: 2022/04/29 16:32:37
-# Last modified: 2022/05/08 11:48:59
+# Last modified: 2022/05/22 10:25:17
 # Description:  A simple web scraper created specifically to pull product information
 #               from book, tv show and movie listings on Amazon
 
@@ -23,7 +23,7 @@ def get_product_details():
     with open(file_name, 'r') as prod_info:
         data = prod_info.read()
 
-    # os.remove(file_name)
+    os.remove(file_name)
 
     return data
 
