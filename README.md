@@ -2,7 +2,7 @@
 <h2> Amazon Web Scraper </h2>
 
 <p> This project employs the BeautifulSoup package to scrape product information from Amazon web sites. 
-  Example code to call this service is show below </p>
+  Example code to call this service is shown below </p>
   
 <hr>
   
